@@ -229,9 +229,8 @@ def main():
         else:
             print('⏰ انتهى وقت الانتظار'); sys.exit(1)
 
-    # 4) تنزيل الـ APK
+    # 4) تنزيل الـ APK من المستودع مباشرة (بدون Artifacts - أسرع ولا يستهلك حصة التخزين)
     if download_only:
-        # ابحث عن أحدث تشغيل مكتمل بنجاح وله artifact
         run_id = None
         for r in api('GET', BASE + '/actions/runs').get('workflow_runs') or []:
             if r.get('path') != WORKFLOW_PATH: continue
@@ -240,46 +239,22 @@ def main():
                 break
         if not run_id:
             print('❌ لا يوجد تشغيل ناجح سابق'); sys.exit(1)
-        print('📦 استخدام آخر بناء ناجح: #%d' % run_id)
-    arts = api('GET', BASE + '/actions/runs/%d/artifacts' % run_id)
-    if '__error__' in arts or not arts.get('artifacts'):
-        print('❌ لا يوجد Artifact'); sys.exit(1)
-    art = None
-    for a in arts['artifacts']:
-        if a.get('name') == ARTIFACT_NAME:
-            art = a
-            break
-    if art is None:
-        art = arts['artifacts'][0]
-    dl = art['archive_download_url']
+        print('📦 آخر بناء ناجح: #%d' % run_id)
 
-    # متابعة الـ redirect يدوياً
-    class NoRedirect(urllib.request.HTTPRedirectHandler):
-        def redirect_request(self, *a, **k): return None
-    op = urllib.request.build_opener(NoRedirect)
-    req = urllib.request.Request(dl, headers={'Authorization': 'Bearer ' + TOKEN, 'User-Agent': 'opencode'})
+    url = BASE + '/contents/' + quote('تطبيق_الجامعه.apk')
+    req = urllib.request.Request(url, headers={
+        'Authorization': 'Bearer ' + TOKEN,
+        'User-Agent': 'opencode',
+        'Accept': 'application/vnd.github.raw'})
     try:
-        resp = op.open(req, timeout=30)
-        loc = resp.headers.get('Location')
+        data = urllib.request.urlopen(req, timeout=600).read()
     except urllib.error.HTTPError as e:
-        loc = e.headers.get('Location')
-    if not loc:
-        print('❌ تعذر الحصول على رابط التنزيل'); sys.exit(1)
-    req2 = urllib.request.Request(loc, headers={'User-Agent': 'opencode'})
-    data = urllib.request.urlopen(req2, timeout=600).read()
-
-    tmpzip = os.path.join(ROOT, '_apk_tmp.zip')
-    io.open(tmpzip, 'wb').write(data)
-    z = zipfile.ZipFile(tmpzip)
-    names = z.namelist()
-    apk_entry = names[0]
-    apk_data = z.read(apk_entry)
-    z.close()
-    io.open(APK_OUT, 'wb').write(apk_data)
-    os.remove(tmpzip)
+        print('❌ تعذر تنزيل الـ APK:', e.code, e.read().decode()[:200])
+        sys.exit(1)
+    io.open(APK_OUT, 'wb').write(data)
     print('✅ تم البناء والتنزيل:')
     print('   📱', APK_OUT)
-    print('   💾 الحجم:', len(apk_data), 'بايت')
+    print('   💾 الحجم:', len(data), 'بايت')
 
 if __name__ == '__main__':
     main()
