@@ -1,0 +1,20 @@
+{
+  "name": "University App - Android",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "17",
+      "jdkDistro": "temurin",
+      "installGradle": false
+    }
+  },
+  "postCreateCommand": "bash .devcontainer/setup-android.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "fwcd.kotlin"
+      ]
+    }
+  }
+}

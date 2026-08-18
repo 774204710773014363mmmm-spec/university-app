@@ -12,7 +12,7 @@
     - ملف التوكن: ضعه في ملف  gh_token.txt  بجانب السكربت (مستثنى من git)
     - أو ضع التوكن في متغير البيئة  GH_TOKEN
 """
-import base64, io, json, os, re, subprocess, sys, time, urllib.request, urllib.error, zipfile
+import base64, hashlib, io, json, os, re, subprocess, sys, time, urllib.request, urllib.error, zipfile
 from urllib.parse import quote
 
 OWNER = '774204710773014363mmmm-spec'
@@ -120,6 +120,19 @@ def get_remote_shas():
         return {}
     return {e['path']: e['sha'] for e in tree['tree'] if e['type'] == 'blob'}
 
+def compare(remote, local):
+    # المقارنة عبر SHA-1 لـ git blob: نفس الطريقة التي يحسبها GitHub - بدون أي تنزيل
+    changed, new_files = [], []
+    for rel, full in local:
+        if rel not in remote:
+            new_files.append((rel, full))
+        else:
+            raw = io.open(full, 'rb').read()
+            blob_sha = hashlib.sha1(b'blob %d\x00' % len(raw) + raw).hexdigest()
+            if blob_sha != remote[rel]:
+                changed.append((rel, full))
+    return changed, new_files
+
 def hash_local(full):
     import hashlib
     return hashlib.sha256(io.open(full, 'rb').read()).hexdigest()
@@ -128,6 +141,28 @@ def main():
     skip_upload = '-skip' in sys.argv
     monitor_only = '-monitor' in sys.argv
     download_only = '-download' in sys.argv
+    upload_only = '-upload' in sys.argv
+
+    # وضع الاستعراض: يعرض التعديلات قبل الرفع/البناء (بدون أي تغيير)
+    if '-diff' in sys.argv:
+        remote = get_remote_shas()
+        local = collect_uploads()
+        changed, new_files = compare(remote, local)
+        print('🔄 تغييرات:', len(changed), '| ملفات جديدة:', len(new_files))
+        if not changed and not new_files:
+            print('✅ لا توجد تغييرات - كل شيء محدث')
+            sys.exit(0)
+        import difflib
+        for rel, full in changed:
+            blob = api('GET', BASE + '/git/blobs/' + remote[rel])
+            old = base64.b64decode(blob['content']).decode('utf-8', errors='replace').splitlines()
+            new = io.open(full, encoding='utf-8').read().splitlines()
+            print('=' * 30, rel)
+            for l in difflib.unified_diff(old, new, 'remote', 'local', lineterm=''):
+                print(l)
+        for rel, _ in new_files:
+            print('=' * 30, rel, '(ملف جديد)')
+        sys.exit(0)
 
     if download_only:
         pass
@@ -145,21 +180,7 @@ def main():
 
         remote = get_remote_shas()
         local = collect_uploads()
-        changed = []
-        new_files = []
-        for rel, full in local:
-            if rel not in remote:
-                new_files.append((rel, full))
-            else:
-                # مقارنة المحتوى عبر تحميل الـ blob
-                blob = api('GET', BASE + '/git/blobs/' + remote[rel])
-                if '__error__' in blob:
-                    print('⚠️', rel, blob['__error__']); continue
-                import base64 as b64
-                remote_bytes = b64.b64decode(blob['content'])
-                local_bytes = io.open(full, 'rb').read()
-                if remote_bytes != local_bytes:
-                    changed.append((rel, full))
+        changed, new_files = compare(remote, local)
         print('🔄 تغييرات:', len(changed), '| ملفات جديدة:', len(new_files))
         for rel, _ in changed + new_files:
             print('   •', rel)
@@ -196,11 +217,15 @@ def main():
             print('✅ تم رفع', len(changed) + len(new_files), 'ملف في كوميت واحد')
         else:
             print('✅ لا توجد تغييرات - الكل محدث')
+
+    if upload_only:
+        sys.exit(0)
+
     elif monitor_only:
         pass
 
     # 2) تشغيل البناء
-    if not monitor_only and not download_only:
+    if not monitor_only and not download_only and not upload_only:
         r = api('POST', BASE + '/actions/workflows/build-apk.yml/dispatches', {'ref': 'main'})
         if '__error__' in r:
             print('❌ فشل تشغيل البناء:', r['__error__']); sys.exit(1)
@@ -208,7 +233,7 @@ def main():
 
     # 3) مراقبة
     run_id = None
-    if not download_only:
+    if not download_only and not upload_only:
         for i in range(100):
             runs = api('GET', BASE + '/actions/runs')
             if '__error__' in runs: time.sleep(5); continue
