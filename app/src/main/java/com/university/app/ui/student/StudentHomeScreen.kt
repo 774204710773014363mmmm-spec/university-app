@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Grade
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.FactCheck
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -42,7 +43,6 @@ import com.university.app.ui.components.AvatarCircle
 import com.university.app.ui.theme.Navy
 import com.university.app.ui.theme.TextSecondary
 import com.university.app.util.SessionManager
-import kotlinx.coroutines.launch
 
 private data class TabItem(val label: String, val icon: ImageVector)
 
@@ -52,11 +52,11 @@ private val tabs = listOf(
     TabItem("الحضور والغياب", Icons.Filled.FactCheck)
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentHomeScreen(onLogout: () -> Unit, onOpenSettings: () -> Unit) {
     val context = LocalContext.current
     val session = remember { SessionManager.current(context) }
-    val scope = rememberCoroutineScope()
     var user by remember { mutableStateOf<User?>(null) }
 
     LaunchedEffect(session?.userId) {

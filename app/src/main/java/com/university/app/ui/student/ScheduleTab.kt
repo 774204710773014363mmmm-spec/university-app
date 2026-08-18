@@ -15,10 +15,10 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.MeetingRoom
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material3.Chip
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,7 +43,6 @@ import com.university.app.ui.theme.Navy
 import com.university.app.ui.theme.NavyContainer
 import com.university.app.ui.theme.TextSecondary
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScheduleTab(user: User?) {
     var loading by remember { mutableStateOf(true) }
@@ -148,10 +147,10 @@ private fun ScheduleCard(schedule: Schedule) {
                     Text(schedule.doctorName, style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
                 }
             }
-            Chip(
+            SuggestionChip(
                 onClick = {},
                 label = { Text(schedule.day) },
-                colors = androidx.compose.material3.ChipDefaults.chipColors(
+                colors = SuggestionChipDefaults.suggestionChipColors(
                     containerColor = NavyContainer,
                     labelColor = Navy
                 )

@@ -164,15 +164,36 @@ def main():
         for rel, _ in changed + new_files:
             print('   •', rel)
         if changed or new_files:
+            # رفع مجمّع بكوميت واحد عبر Git Data API (أسرع من الرفع ملف-ملف)
+            entries = []
             for rel, full in changed + new_files:
                 raw = io.open(full, 'rb').read()
-                r = api('PUT', BASE + '/contents/' + rel,
-                        {'message': 'update ' + rel,
-                         'content': base64.b64encode(raw).decode(),
-                         'sha': remote.get(rel)})
+                r = api('POST', BASE + '/git/blobs',
+                        {'content': base64.b64encode(raw).decode(), 'encoding': 'base64'})
                 if '__error__' in r:
-                    print('❌ فشل رفع', rel, r['__error__']); sys.exit(1)
-            print('✅ تم رفع', len(changed) + len(new_files), 'ملف')
+                    print('❌ فشل blob', rel, r['__error__']); sys.exit(1)
+                entries.append({'path': rel, 'mode': '100644', 'type': 'blob', 'sha': r['sha']})
+                print('   ⬆', rel)
+            # إبقاء باقي الملفات الحالية كما هي
+            tree = api('GET', BASE + '/git/trees/main?recursive=1')
+            if '__error__' not in tree:
+                for e in tree.get('tree', []):
+                    if e.get('type') == 'blob' and not any(x['path'] == e['path'] for x in entries):
+                        entries.append({'path': e['path'], 'mode': e.get('mode', '100644'),
+                                        'type': 'blob', 'sha': e['sha']})
+            t = api('POST', BASE + '/git/trees', {'tree': entries})
+            if '__error__' in t:
+                print('❌ فشل الشجرة:', t['__error__']); sys.exit(1)
+            head = api('GET', BASE + '/git/ref/heads/main')
+            parents = [head['object']['sha']] if '__error__' not in head else []
+            c = api('POST', BASE + '/git/commits',
+                    {'message': 'build update', 'tree': t['sha'], 'parents': parents})
+            if '__error__' in c:
+                print('❌ فشل الكوميت:', c['__error__']); sys.exit(1)
+            r = api('PATCH', BASE + '/git/refs/heads/main', {'sha': c['sha'], 'force': False})
+            if '__error__' in r:
+                print('❌ فشل تحديث الفرع:', r['__error__']); sys.exit(1)
+            print('✅ تم رفع', len(changed) + len(new_files), 'ملف في كوميت واحد')
         else:
             print('✅ لا توجد تغييرات - الكل محدث')
     elif monitor_only:
@@ -188,11 +209,11 @@ def main():
     # 3) مراقبة
     run_id = None
     if not download_only:
-        for i in range(80):
+        for i in range(100):
             runs = api('GET', BASE + '/actions/runs')
-            if '__error__' in runs: time.sleep(10); continue
+            if '__error__' in runs: time.sleep(5); continue
             runs = [r for r in (runs.get('workflow_runs') or []) if r.get('path') == WORKFLOW_PATH]
-            if not runs: time.sleep(10); continue
+            if not runs: time.sleep(5); continue
             r = runs[0]
             if run_id is None:
                 run_id = r['id']
@@ -204,7 +225,7 @@ def main():
                         print('❌ البناء فشل! راجع GitHub Actions')
                         sys.exit(1)
                     break
-            time.sleep(20)
+            time.sleep(10)
         else:
             print('⏰ انتهى وقت الانتظار'); sys.exit(1)
 
