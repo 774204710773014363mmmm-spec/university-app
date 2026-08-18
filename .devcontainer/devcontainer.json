@@ -1,6 +1,11 @@
 {
   "name": "University App - Android",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  },
   "features": {
     "ghcr.io/devcontainers/features/java:1": {
       "version": "17",
