@@ -60,6 +60,7 @@ import com.university.app.data.model.User
 import com.university.app.ui.components.EmptyState
 import com.university.app.ui.components.GlassCard
 import com.university.app.ui.components.LoadingBox
+import com.university.app.ui.components.StatCard
 import com.university.app.ui.theme.AbsentRed
 import com.university.app.ui.theme.GlassBorder
 import com.university.app.ui.theme.GlowBlue

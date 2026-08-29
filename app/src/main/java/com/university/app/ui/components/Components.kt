@@ -68,6 +68,7 @@ import com.university.app.ui.theme.GlowPurple
 import com.university.app.ui.theme.RoyalBlue
 import com.university.app.ui.theme.SurfaceGlass
 import com.university.app.ui.theme.SurfaceGlassLight
+import com.university.app.ui.theme.TextSecondary
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
