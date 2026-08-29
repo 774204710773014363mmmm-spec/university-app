@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.MeetingRoom
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
@@ -31,16 +30,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.university.app.AppService
 import com.university.app.data.model.Schedule
 import com.university.app.data.model.User
 import com.university.app.data.model.WeekDays
-import com.university.app.ui.components.AppCard
 import com.university.app.ui.components.EmptyState
+import com.university.app.ui.components.GlassCard
 import com.university.app.ui.components.LoadingBox
 import com.university.app.ui.components.SectionTitle
-import com.university.app.ui.theme.Navy
-import com.university.app.ui.theme.NavyContainer
+import com.university.app.ui.theme.GlassBorder
+import com.university.app.ui.theme.GlowBlue
+import com.university.app.ui.theme.GlowPurple
 import com.university.app.ui.theme.TextSecondary
 
 @Composable
@@ -104,55 +105,68 @@ fun ScheduleTab(user: User?) {
 
 @Composable
 private fun ScheduleCard(schedule: Schedule) {
-    AppCard {
+    GlassCard {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = schedule.subjectName,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Navy,
-                    fontWeight = FontWeight.Bold
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
                 )
                 Spacer(Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Filled.AccessTime,
                         contentDescription = null,
-                        tint = TextSecondary,
+                        tint = GlowBlue,
                         modifier = Modifier.width(18.dp).height(18.dp)
                     )
                     Spacer(Modifier.width(6.dp))
-                    Text(schedule.time, style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                    Text(
+                        schedule.time,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary.copy(alpha = 0.8f)
+                    )
                 }
                 Spacer(Modifier.height(6.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Filled.MeetingRoom,
                         contentDescription = null,
-                        tint = TextSecondary,
+                        tint = GlowPurple,
                         modifier = Modifier.width(18.dp).height(18.dp)
                     )
                     Spacer(Modifier.width(6.dp))
-                    Text("القاعة: ${schedule.hall}", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                    Text(
+                        "القاعة: ${schedule.hall}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary.copy(alpha = 0.8f)
+                    )
                 }
                 Spacer(Modifier.height(6.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.Filled.Person,
                         contentDescription = null,
-                        tint = TextSecondary,
+                        tint = GlowBlue,
                         modifier = Modifier.width(18.dp).height(18.dp)
                     )
                     Spacer(Modifier.width(6.dp))
-                    Text(schedule.doctorName, style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                    Text(
+                        schedule.doctorName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary.copy(alpha = 0.8f)
+                    )
                 }
             }
             SuggestionChip(
                 onClick = {},
-                label = { Text(schedule.day) },
+                label = { Text(schedule.day, fontSize = 12.sp) },
                 colors = SuggestionChipDefaults.suggestionChipColors(
-                    containerColor = NavyContainer,
-                    labelColor = Navy
+                    containerColor = GlowBlue.copy(alpha = 0.15f),
+                    labelColor = GlowBlue
                 )
             )
         }

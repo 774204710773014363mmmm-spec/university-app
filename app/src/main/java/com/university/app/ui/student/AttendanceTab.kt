@@ -1,6 +1,7 @@
 package com.university.app.ui.student
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,11 +13,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
@@ -44,27 +47,27 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.university.app.AppService
 import com.university.app.data.model.Attendance
 import com.university.app.data.model.AttendanceStatus
 import com.university.app.data.model.User
-import com.university.app.ui.components.AppCard
 import com.university.app.ui.components.EmptyState
+import com.university.app.ui.components.GlassCard
 import com.university.app.ui.components.LoadingBox
-import com.university.app.ui.components.StatCard
 import com.university.app.ui.theme.AbsentRed
-import com.university.app.ui.theme.AbsentRedContainer
-import com.university.app.ui.theme.Background
-import com.university.app.ui.theme.Navy
-import com.university.app.ui.theme.NavyContainer
-import com.university.app.ui.theme.OnNavyContainer
+import com.university.app.ui.theme.GlassBorder
+import com.university.app.ui.theme.GlowBlue
+import com.university.app.ui.theme.GlowGreen
+import com.university.app.ui.theme.GlowPurple
 import com.university.app.ui.theme.PresentGreen
-import com.university.app.ui.theme.PresentGreenContainer
-import com.university.app.ui.theme.SurfaceWhite
 import com.university.app.ui.theme.TextSecondary
+import com.university.app.ui.theme.WarningAmber
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -121,7 +124,7 @@ fun AttendanceTab(user: User?) {
                         2 -> step = 1
                     }
                 }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع", tint = Navy)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع", tint = GlowBlue)
                 }
                 Text(
                     text = when (step) {
@@ -129,7 +132,7 @@ fun AttendanceTab(user: User?) {
                         else -> "$subject"
                     },
                     style = MaterialTheme.typography.titleSmall,
-                    color = Navy
+                    color = GlowBlue
                 )
             }
         }
@@ -160,7 +163,7 @@ fun AttendanceTab(user: User?) {
                             Text(
                                 "اختر المادة",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = Navy,
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(bottom = 4.dp)
                             )
@@ -169,10 +172,16 @@ fun AttendanceTab(user: User?) {
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable { loadRecords(subjects[i]) },
-                                shape = MaterialTheme.shapes.large,
-                                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                                    .clickable { loadRecords(subjects[i]) }
+                                    .shadow(
+                                        elevation = 12.dp,
+                                        shape = RoundedCornerShape(20.dp),
+                                        ambientColor = GlowBlue.copy(alpha = 0.3f),
+                                        spotColor = GlowPurple.copy(alpha = 0.5f)
+                                    ),
+                                shape = RoundedCornerShape(20.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color(0x15FFFFFF)),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                             ) {
                                 Row(
                                     modifier = Modifier.padding(16.dp),
@@ -181,17 +190,29 @@ fun AttendanceTab(user: User?) {
                                     Box(
                                         modifier = Modifier
                                             .size(44.dp)
-                                            .background(NavyContainer, CircleShape),
+                                            .shadow(
+                                                elevation = 8.dp,
+                                                shape = CircleShape,
+                                                ambientColor = GlowBlue.copy(alpha = 0.4f),
+                                                spotColor = GlowPurple.copy(alpha = 0.6f)
+                                            )
+                                            .background(
+                                                brush = Brush.radialGradient(
+                                                    colors = listOf(GlowBlue.copy(alpha = 0.3f), Color.Transparent)
+                                                ),
+                                                shape = CircleShape
+                                            ),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(Icons.Filled.Event, contentDescription = null, tint = OnNavyContainer)
+                                        Icon(Icons.Filled.Event, contentDescription = null, tint = GlowBlue)
                                     }
                                     Spacer(Modifier.size(12.dp))
                                     Text(
                                         text = subjects[i],
                                         style = MaterialTheme.typography.titleMedium,
-                                        color = Navy,
-                                        fontWeight = FontWeight.Bold
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
                                     )
                                 }
                             }
@@ -206,15 +227,17 @@ fun AttendanceTab(user: User?) {
     if (showLockedDialog) {
         AlertDialog(
             onDismissRequest = { showLockedDialog = false },
-            title = { Text("لم تصل لهذه المرحلة بعد", fontWeight = FontWeight.Bold) },
+            title = { Text("لم تصل لهذه المرحلة بعد", fontWeight = FontWeight.Bold, color = Color.White) },
             text = { Text("ستتمكن من الاطلاع على سجل الحضور لهذه المرحلة عند انتقالك إليها.", color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { showLockedDialog = false }) {
-                    Text("حسناً", color = Navy, fontWeight = FontWeight.SemiBold)
+                    Text("حسناً", color = GlowBlue, fontWeight = FontWeight.SemiBold)
                 }
             },
-            shape = MaterialTheme.shapes.large,
-            containerColor = SurfaceWhite
+            shape = RoundedCornerShape(20.dp),
+            containerColor = Color(0xFF1B2A4A),
+            titleContentColor = Color.White,
+            textContentColor = TextSecondary
         )
     }
 }
@@ -232,17 +255,34 @@ private fun AttendanceLevelGrid(currentLevel: Int, onLevelClick: (Int) -> Unit) 
             Text(
                 "اختر المستوى",
                 style = MaterialTheme.typography.titleLarge,
-                color = Navy,
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
         }
         itemsIndexed(listOf(1, 2, 3, 4)) { _, lvl ->
+            val glowColor = when (lvl) {
+                1 -> GlowBlue
+                2 -> GlowPurple
+                3 -> GlowGreen
+                else -> WarningAmber
+            }
+
             Card(
-                modifier = Modifier.fillMaxWidth().clickable { onLevelClick(lvl) },
-                shape = MaterialTheme.shapes.large,
-                colors = CardDefaults.cardColors(containerColor = if (lvl > currentLevel) Background else SurfaceWhite),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onLevelClick(lvl) }
+                    .shadow(
+                        elevation = if (lvl > currentLevel) 4.dp else 12.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        ambientColor = if (lvl > currentLevel) Color.Transparent else glowColor.copy(alpha = 0.3f),
+                        spotColor = if (lvl > currentLevel) Color.Transparent else glowColor.copy(alpha = 0.5f)
+                    ),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = if (lvl > currentLevel) Color(0x10FFFFFF) else Color(0x15FFFFFF)
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(20.dp),
@@ -251,21 +291,34 @@ private fun AttendanceLevelGrid(currentLevel: Int, onLevelClick: (Int) -> Unit) 
                     Box(
                         modifier = Modifier
                             .size(52.dp)
-                            .background(if (lvl > currentLevel) NavyContainer.copy(alpha = 0.6f) else NavyContainer, CircleShape),
+                            .shadow(
+                                elevation = if (lvl > currentLevel) 0.dp else 8.dp,
+                                shape = CircleShape,
+                                ambientColor = if (lvl > currentLevel) Color.Transparent else glowColor.copy(alpha = 0.4f),
+                                spotColor = if (lvl > currentLevel) Color.Transparent else glowColor.copy(alpha = 0.6f)
+                            )
+                            .background(
+                                brush = Brush.radialGradient(
+                                    colors = if (lvl > currentLevel) listOf(Color(0x30FFFFFF), Color.Transparent)
+                                    else listOf(glowColor.copy(alpha = 0.3f), Color.Transparent)
+                                ),
+                                shape = CircleShape
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = if (lvl > currentLevel) Icons.Filled.School else Icons.Filled.Star,
                             contentDescription = null,
-                            tint = if (lvl > currentLevel) TextSecondary else OnNavyContainer
+                            tint = if (lvl > currentLevel) TextSecondary else glowColor
                         )
                     }
                     Spacer(Modifier.height(12.dp))
                     Text(
                         text = levelText(lvl),
                         style = MaterialTheme.typography.titleMedium,
-                        color = if (lvl > currentLevel) TextSecondary else Navy,
-                        fontWeight = FontWeight.Bold
+                        color = if (lvl > currentLevel) TextSecondary else Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
                     )
                 }
             }
@@ -289,15 +342,15 @@ private fun AttendanceDetail(records: List<Attendance>) {
                 StatCard(
                     label = "إجمالي أيام الحضور",
                     value = "$present",
-                    containerColor = PresentGreenContainer,
-                    contentColor = PresentGreen,
+                    containerColor = GlowGreen.copy(alpha = 0.15f),
+                    contentColor = GlowGreen,
                     icon = Icons.Filled.CheckCircle,
                     modifier = Modifier.weight(1f)
                 )
                 StatCard(
                     label = "إجمالي أيام الغياب",
                     value = "$absent",
-                    containerColor = AbsentRedContainer,
+                    containerColor = AbsentRed.copy(alpha = 0.15f),
                     contentColor = AbsentRed,
                     icon = Icons.Filled.Cancel,
                     modifier = Modifier.weight(1f)
@@ -305,17 +358,17 @@ private fun AttendanceDetail(records: List<Attendance>) {
             }
         }
         item {
-            AppCard {
+            GlassCard {
                 Column {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("نسبة الحضور", style = MaterialTheme.typography.titleSmall, color = Navy)
+                        Text("نسبة الحضور", style = MaterialTheme.typography.titleSmall, color = Color.White)
                         Text(
                             "${"%.0f".format(percent)}%",
                             style = MaterialTheme.typography.titleSmall,
-                            color = if (percent >= 75) PresentGreen else AbsentRed,
+                            color = if (percent >= 75) GlowGreen else AbsentRed,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -323,14 +376,14 @@ private fun AttendanceDetail(records: List<Attendance>) {
                     LinearProgressIndicator(
                         progress = { percent / 100f },
                         modifier = Modifier.fillMaxWidth().height(10.dp),
-                        color = PresentGreen,
-                        trackColor = AbsentRedContainer
+                        color = GlowGreen,
+                        trackColor = AbsentRed.copy(alpha = 0.2f)
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
                         "إجمالي المحاضرات: ${records.size}",
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
+                        color = TextSecondary.copy(alpha = 0.7f)
                     )
                 }
             }
@@ -342,7 +395,7 @@ private fun AttendanceDetail(records: List<Attendance>) {
                 Text(
                     "كشف المحاضرات",
                     style = MaterialTheme.typography.titleMedium,
-                    color = Navy,
+                    color = Color.White,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -350,21 +403,30 @@ private fun AttendanceDetail(records: List<Attendance>) {
             items(records.size) { i ->
                 val record = records[i]
                 val isPresent = record.status == AttendanceStatus.PRESENT
-                AppCard {
+                GlassCard {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
+                                .shadow(
+                                    elevation = 8.dp,
+                                    shape = CircleShape,
+                                    ambientColor = if (isPresent) GlowGreen.copy(alpha = 0.4f) else AbsentRed.copy(alpha = 0.4f),
+                                    spotColor = if (isPresent) GlowGreen.copy(alpha = 0.6f) else AbsentRed.copy(alpha = 0.6f)
+                                )
                                 .background(
-                                    if (isPresent) PresentGreenContainer else AbsentRedContainer,
-                                    CircleShape
+                                    brush = Brush.radialGradient(
+                                        colors = if (isPresent) listOf(GlowGreen.copy(alpha = 0.3f), Color.Transparent)
+                                        else listOf(AbsentRed.copy(alpha = 0.3f), Color.Transparent)
+                                    ),
+                                    shape = CircleShape
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = if (isPresent) Icons.Filled.CheckCircle else Icons.Filled.Cancel,
                                 contentDescription = null,
-                                tint = if (isPresent) PresentGreen else AbsentRed,
+                                tint = if (isPresent) GlowGreen else AbsentRed,
                                 modifier = Modifier.size(22.dp)
                             )
                         }
@@ -373,18 +435,22 @@ private fun AttendanceDetail(records: List<Attendance>) {
                             Text(
                                 text = "المحاضرة ${record.lectureNumber}",
                                 style = MaterialTheme.typography.titleSmall,
-                                color = Navy,
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold
                             )
                             if (record.date.isNotBlank()) {
                                 Spacer(Modifier.height(2.dp))
-                                Text(record.date, style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                                Text(
+                                    record.date,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary.copy(alpha = 0.7f)
+                                )
                             }
                         }
                         Text(
                             text = if (isPresent) "حاضر" else "غايب",
                             style = MaterialTheme.typography.titleSmall,
-                            color = if (isPresent) PresentGreen else AbsentRed,
+                            color = if (isPresent) GlowGreen else AbsentRed,
                             fontWeight = FontWeight.Bold
                         )
                     }

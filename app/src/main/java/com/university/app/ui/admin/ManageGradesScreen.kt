@@ -52,8 +52,8 @@ import com.university.app.ui.components.PrimaryButton
 import com.university.app.ui.components.TERM_LABELS
 import com.university.app.ui.components.levelNumber
 import com.university.app.ui.components.termNumber
-import com.university.app.ui.theme.Navy
-import com.university.app.ui.theme.SurfaceWhite
+import com.university.app.ui.theme.GlowBlue
+import com.university.app.ui.theme.SurfaceGlassLight
 import com.university.app.ui.theme.TextSecondary
 import com.university.app.util.ExcelReader
 import kotlinx.coroutines.launch
@@ -128,7 +128,7 @@ fun ManageGradesScreen(onBack: () -> Unit) {
                         Text(
                             "استيراد الدرجات من ملف إكسل",
                             style = MaterialTheme.typography.titleMedium,
-                            color = Navy,
+                            color = GlowBlue,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(Modifier.height(4.dp))
@@ -220,7 +220,7 @@ fun ManageGradesScreen(onBack: () -> Unit) {
                             },
                             modifier = Modifier.fillMaxWidth().height(52.dp),
                             shape = MaterialTheme.shapes.medium,
-                            colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = Navy)
+                            colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = GlowBlue)
                         ) {
                             Icon(Icons.Filled.UploadFile, contentDescription = null)
                             Spacer(Modifier.size(8.dp))
@@ -313,14 +313,14 @@ fun ManageGradesScreen(onBack: () -> Unit) {
                         }
                     }
                 ) {
-                    Text("رفع", color = Navy, fontWeight = FontWeight.SemiBold)
+                    Text("رفع", color = GlowBlue, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(enabled = !importing, onClick = { preview = null }) { Text("إلغاء", color = TextSecondary) }
             },
             shape = MaterialTheme.shapes.large,
-            containerColor = SurfaceWhite
+            containerColor = SurfaceGlassLight
         )
     }
 }

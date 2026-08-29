@@ -60,8 +60,8 @@ import com.university.app.ui.components.TERM_LABELS
 import com.university.app.ui.components.levelNumber
 import com.university.app.ui.components.termNumber
 import com.university.app.ui.theme.AbsentRed
-import com.university.app.ui.theme.Navy
-import com.university.app.ui.theme.SurfaceWhite
+import com.university.app.ui.theme.GlowBlue
+import com.university.app.ui.theme.SurfaceGlassLight
 import com.university.app.ui.theme.TextSecondary
 import com.university.app.util.ExcelReader
 import kotlinx.coroutines.launch
@@ -161,7 +161,7 @@ fun ManageStudentsScreen(onBack: () -> Unit) {
                         onClick = { showAddForm = !showAddForm },
                         modifier = Modifier.weight(1f).height(50.dp),
                         shape = MaterialTheme.shapes.medium,
-                        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = Navy)
+                        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = GlowBlue)
                     ) {
                         Icon(Icons.Filled.Add, contentDescription = null)
                         Spacer(Modifier.size(6.dp))
@@ -181,7 +181,7 @@ fun ManageStudentsScreen(onBack: () -> Unit) {
                         },
                         modifier = Modifier.weight(1f).height(50.dp),
                         shape = MaterialTheme.shapes.medium,
-                        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = Navy)
+                        colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = GlowBlue)
                     ) {
                         Icon(Icons.Filled.UploadFile, contentDescription = null)
                         Spacer(Modifier.size(6.dp))
@@ -194,7 +194,7 @@ fun ManageStudentsScreen(onBack: () -> Unit) {
                 item {
                     AppCard {
                         Column {
-                            Text("بيانات الطالب الجديد", style = MaterialTheme.typography.titleMedium, color = Navy, fontWeight = FontWeight.Bold)
+                            Text("بيانات الطالب الجديد", style = MaterialTheme.typography.titleMedium, color = GlowBlue, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(16.dp))
                             OutlinedTextField(
                                 value = name,
@@ -263,7 +263,7 @@ fun ManageStudentsScreen(onBack: () -> Unit) {
                             AvatarCircle(initial = student.name, size = 44)
                             Spacer(Modifier.size(12.dp))
                             Column(modifier = Modifier.weight(1f)) {
-                                Text(student.name, style = MaterialTheme.typography.titleSmall, color = Navy, fontWeight = FontWeight.Bold)
+                                Text(student.name, style = MaterialTheme.typography.titleSmall, color = GlowBlue, fontWeight = FontWeight.Bold)
                                 Spacer(Modifier.height(4.dp))
                                 Text("الرقم الجامعي: ${student.id}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
                             }
@@ -348,7 +348,7 @@ fun ManageStudentsScreen(onBack: () -> Unit) {
                         }
                     }
                 ) {
-                    Text("استيراد", color = Navy, fontWeight = FontWeight.SemiBold)
+                    Text("استيراد", color = GlowBlue, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
@@ -357,7 +357,7 @@ fun ManageStudentsScreen(onBack: () -> Unit) {
                 }
             },
             shape = MaterialTheme.shapes.large,
-            containerColor = SurfaceWhite
+            containerColor = SurfaceGlassLight
         )
     }
 }

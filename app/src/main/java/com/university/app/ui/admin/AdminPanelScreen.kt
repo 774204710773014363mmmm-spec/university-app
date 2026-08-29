@@ -33,11 +33,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.university.app.ui.components.AppTopBar
-import com.university.app.ui.theme.Background
-import com.university.app.ui.theme.Navy
-import com.university.app.ui.theme.NavyContainer
-import com.university.app.ui.theme.OnNavyContainer
-import com.university.app.ui.theme.SurfaceWhite
+import androidx.compose.ui.graphics.Color
+import com.university.app.ui.theme.GlowBlue
+import com.university.app.ui.theme.SurfaceGlassLight
 import com.university.app.ui.theme.TextSecondary
 
 private data class AdminSection(
@@ -63,7 +61,7 @@ fun AdminPanelScreen(
 
     Scaffold(
         topBar = { AppTopBar(title = "لوحة تحكم المشرف", onBack = onBack) },
-        containerColor = Background
+        containerColor = Color.Transparent
     ) { padding ->
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(padding),
@@ -74,7 +72,7 @@ fun AdminPanelScreen(
                 Text(
                     "أقسام لوحة التحكم",
                     style = MaterialTheme.typography.titleLarge,
-                    color = Navy,
+                    color = GlowBlue,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
@@ -93,7 +91,7 @@ fun AdminPanelScreen(
                             }
                         },
                     shape = MaterialTheme.shapes.large,
-                    colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                    colors = CardDefaults.cardColors(containerColor = SurfaceGlassLight),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Row(
@@ -103,17 +101,17 @@ fun AdminPanelScreen(
                         Box(
                             modifier = Modifier
                                 .size(52.dp)
-                                .background(NavyContainer, CircleShape),
+                                .background(GlowBlue.copy(alpha = 0.15f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(section.icon, contentDescription = null, tint = OnNavyContainer, modifier = Modifier.size(26.dp))
+                            Icon(section.icon, contentDescription = null, tint = GlowBlue, modifier = Modifier.size(26.dp))
                         }
                         Spacer(Modifier.size(16.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 section.title,
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Navy,
+                                color = GlowBlue,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(4.dp))

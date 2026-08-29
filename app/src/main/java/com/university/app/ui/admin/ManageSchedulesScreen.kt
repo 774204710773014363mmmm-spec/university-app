@@ -63,10 +63,8 @@ import com.university.app.ui.components.TERM_LABELS
 import com.university.app.ui.components.levelNumber
 import com.university.app.ui.components.termNumber
 import com.university.app.ui.theme.AbsentRed
-import com.university.app.ui.theme.Navy
-import com.university.app.ui.theme.NavyContainer
-import com.university.app.ui.theme.OnNavyContainer
-import com.university.app.ui.theme.SurfaceWhite
+import com.university.app.ui.theme.GlowBlue
+import com.university.app.ui.theme.SurfaceGlassLight
 import com.university.app.ui.theme.TextSecondary
 import com.university.app.util.ExcelReader
 import kotlinx.coroutines.launch
@@ -186,7 +184,7 @@ fun ManageSchedulesScreen(onBack: () -> Unit) {
                             Text(
                                 "الجدول التلقائي",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Navy,
+                                color = GlowBlue,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(8.dp))
@@ -221,7 +219,7 @@ fun ManageSchedulesScreen(onBack: () -> Unit) {
                 item {
                     AppCard {
                         Column {
-                            Text("إضافة محاضرة يدوياً", style = MaterialTheme.typography.titleMedium, color = Navy, fontWeight = FontWeight.Bold)
+                            Text("إضافة محاضرة يدوياً", style = MaterialTheme.typography.titleMedium, color = GlowBlue, fontWeight = FontWeight.Bold)
                             Spacer(Modifier.height(4.dp))
                             Text(
                                 "الجدول المرفوع يدوياً يظهر فوراً للطلاب ويلغي الجدول التلقائي",
@@ -303,7 +301,7 @@ fun ManageSchedulesScreen(onBack: () -> Unit) {
                                 },
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
                                 shape = MaterialTheme.shapes.medium,
-                                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = Navy)
+                                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = GlowBlue)
                             ) {
                                 Icon(Icons.Filled.UploadFile, contentDescription = null)
                                 Spacer(Modifier.size(6.dp))
@@ -339,7 +337,7 @@ fun ManageSchedulesScreen(onBack: () -> Unit) {
                                 Text(
                                     d,
                                     style = MaterialTheme.typography.titleSmall,
-                                    color = Navy,
+                                    color = GlowBlue,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(top = 4.dp)
                                 )
@@ -352,7 +350,7 @@ fun ManageSchedulesScreen(onBack: () -> Unit) {
                                             Text(
                                                 "${s.subjectName} - ${s.time}",
                                                 style = MaterialTheme.typography.titleSmall,
-                                                color = Navy,
+                                                color = GlowBlue,
                                                 fontWeight = FontWeight.Bold
                                             )
                                             Spacer(Modifier.height(4.dp))
@@ -450,14 +448,14 @@ fun ManageSchedulesScreen(onBack: () -> Unit) {
                         }
                     }
                 ) {
-                    Text("استيراد", color = Navy, fontWeight = FontWeight.SemiBold)
+                    Text("استيراد", color = GlowBlue, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { importPreview = null }) { Text("إلغاء", color = TextSecondary) }
             },
             shape = MaterialTheme.shapes.large,
-            containerColor = SurfaceWhite
+            containerColor = SurfaceGlassLight
         )
     }
 }

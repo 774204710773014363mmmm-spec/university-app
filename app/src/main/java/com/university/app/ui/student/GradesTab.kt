@@ -1,6 +1,7 @@
 package com.university.app.ui.student
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
@@ -43,21 +45,23 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.university.app.AppService
 import com.university.app.data.model.Grade
 import com.university.app.data.model.User
-import com.university.app.ui.components.AppCard
 import com.university.app.ui.components.EmptyState
+import com.university.app.ui.components.GlassCard
 import com.university.app.ui.components.LoadingBox
-import com.university.app.ui.theme.Background
-import com.university.app.ui.theme.Navy
-import com.university.app.ui.theme.NavyContainer
-import com.university.app.ui.theme.OnNavyContainer
+import com.university.app.ui.theme.GlassBorder
+import com.university.app.ui.theme.GlowBlue
+import com.university.app.ui.theme.GlowGreen
+import com.university.app.ui.theme.GlowPurple
 import com.university.app.ui.theme.PresentGreen
-import com.university.app.ui.theme.SurfaceWhite
 import com.university.app.ui.theme.TextSecondary
 import com.university.app.ui.theme.WarningAmber
 import kotlinx.coroutines.launch
@@ -103,7 +107,7 @@ fun GradesTab(user: User?) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = ::back) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع", tint = Navy)
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "رجوع", tint = GlowBlue)
                 }
                 Text("الخطوة: ", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
                 Text(
@@ -112,7 +116,7 @@ fun GradesTab(user: User?) {
                         else -> "المستوى ${levelText(level)} > الترم ${termText(term)}"
                     },
                     style = MaterialTheme.typography.titleSmall,
-                    color = Navy
+                    color = GlowBlue
                 )
             }
         }
@@ -150,7 +154,7 @@ fun GradesTab(user: User?) {
                             Text(
                                 text = "مواد المستوى ${levelText(level)} - الترم ${termText(term)}",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Navy,
+                                color = Color.White,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(8.dp))
@@ -173,23 +177,25 @@ fun GradesTab(user: User?) {
     if (showLockedDialog) {
         AlertDialog(
             onDismissRequest = { showLockedDialog = false },
-            title = { Text("لم تصل لهذه المرحلة بعد", fontWeight = FontWeight.Bold) },
+            title = { Text("لم تصل لهذه المرحلة بعد", fontWeight = FontWeight.Bold, color = Color.White) },
             text = { Text("ستتمكن من الاطلاع على درجات هذه المرحلة عند انتقالك إليها.", color = TextSecondary) },
             confirmButton = {
                 TextButton(onClick = { showLockedDialog = false }) {
-                    Text("حسناً", color = Navy, fontWeight = FontWeight.SemiBold)
+                    Text("حسناً", color = GlowBlue, fontWeight = FontWeight.SemiBold)
                 }
             },
-            shape = MaterialTheme.shapes.large,
-            containerColor = SurfaceWhite
+            shape = RoundedCornerShape(20.dp),
+            containerColor = Color(0xFF1B2A4A),
+            titleContentColor = Color.White,
+            textContentColor = TextSecondary
         )
     }
 
     selectedSubject?.let { grade ->
         ModalBottomSheet(
             onDismissRequest = { selectedSubject = null },
-            containerColor = SurfaceWhite,
-            shape = MaterialTheme.shapes.extraLarge
+            containerColor = Color(0xFF1B2A4A),
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             GradeDetailSheet(grade)
         }
@@ -209,7 +215,7 @@ private fun LevelGrid(currentLevel: Int, onLevelClick: (Int) -> Unit) {
             Text(
                 "اختر المستوى",
                 style = MaterialTheme.typography.titleLarge,
-                color = Navy,
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
@@ -226,11 +232,28 @@ private fun LevelGrid(currentLevel: Int, onLevelClick: (Int) -> Unit) {
 
 @Composable
 private fun LevelCard(number: Int, locked: Boolean, onClick: () -> Unit) {
+    val glowColor = when (number) {
+        1 -> GlowBlue
+        2 -> GlowPurple
+        3 -> GlowGreen
+        else -> WarningAmber
+    }
+
     Card(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
-        shape = MaterialTheme.shapes.large,
-        colors = CardDefaults.cardColors(containerColor = if (locked) Background else SurfaceWhite),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .shadow(
+                elevation = if (locked) 4.dp else 12.dp,
+                shape = RoundedCornerShape(20.dp),
+                ambientColor = if (locked) Color.Transparent else glowColor.copy(alpha = 0.3f),
+                spotColor = if (locked) Color.Transparent else glowColor.copy(alpha = 0.5f)
+            ),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (locked) Color(0x10FFFFFF) else Color(0x15FFFFFF)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth().padding(20.dp),
@@ -239,27 +262,41 @@ private fun LevelCard(number: Int, locked: Boolean, onClick: () -> Unit) {
             Box(
                 modifier = Modifier
                     .size(52.dp)
-                    .background(if (locked) NavyContainer.copy(alpha = 0.6f) else NavyContainer, CircleShape),
+                    .shadow(
+                        elevation = if (locked) 0.dp else 8.dp,
+                        shape = CircleShape,
+                        ambientColor = if (locked) Color.Transparent else glowColor.copy(alpha = 0.4f),
+                        spotColor = if (locked) Color.Transparent else glowColor.copy(alpha = 0.6f)
+                    )
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = if (locked) listOf(Color(0x30FFFFFF), Color.Transparent)
+                            else listOf(glowColor.copy(alpha = 0.3f), Color.Transparent)
+                        ),
+                        shape = CircleShape
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = if (locked) Icons.Filled.School else Icons.Filled.Star,
                     contentDescription = null,
-                    tint = if (locked) TextSecondary else OnNavyContainer
+                    tint = if (locked) TextSecondary else glowColor
                 )
             }
             Spacer(Modifier.height(12.dp))
             Text(
                 text = levelText(number),
                 style = MaterialTheme.typography.titleMedium,
-                color = if (locked) TextSecondary else Navy,
-                fontWeight = FontWeight.Bold
+                color = if (locked) TextSecondary else Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = if (locked) "قريباً" else "اضغط للعرض",
                 style = MaterialTheme.typography.labelMedium,
-                color = TextSecondary
+                color = TextSecondary.copy(alpha = 0.7f),
+                fontSize = 11.sp
             )
         }
     }
@@ -278,17 +315,25 @@ private fun TermGrid(onTermClick: (Int) -> Unit) {
             Text(
                 "اختر الترم",
                 style = MaterialTheme.typography.titleLarge,
-                color = Navy,
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 4.dp)
             )
         }
         itemsIndexed(listOf(1, 2)) { _, t ->
             Card(
-                modifier = Modifier.fillMaxWidth().clickable { onTermClick(t) },
-                shape = MaterialTheme.shapes.large,
-                colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onTermClick(t) }
+                    .shadow(
+                        elevation = 12.dp,
+                        shape = RoundedCornerShape(20.dp),
+                        ambientColor = GlowBlue.copy(alpha = 0.3f),
+                        spotColor = GlowPurple.copy(alpha = 0.5f)
+                    ),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0x15FFFFFF)),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Column(
                     modifier = Modifier.fillMaxWidth().padding(20.dp),
@@ -297,17 +342,29 @@ private fun TermGrid(onTermClick: (Int) -> Unit) {
                     Box(
                         modifier = Modifier
                             .size(52.dp)
-                            .background(NavyContainer, CircleShape),
+                            .shadow(
+                                elevation = 8.dp,
+                                shape = CircleShape,
+                                ambientColor = GlowBlue.copy(alpha = 0.4f),
+                                spotColor = GlowPurple.copy(alpha = 0.6f)
+                            )
+                            .background(
+                                brush = Brush.radialGradient(
+                                    colors = listOf(GlowBlue.copy(alpha = 0.3f), Color.Transparent)
+                                ),
+                                shape = CircleShape
+                            ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Filled.School, contentDescription = null, tint = OnNavyContainer)
+                        Icon(Icons.Filled.School, contentDescription = null, tint = GlowBlue)
                     }
                     Spacer(Modifier.height(12.dp))
                     Text(
                         text = termText(t),
                         style = MaterialTheme.typography.titleMedium,
-                        color = Navy,
-                        fontWeight = FontWeight.Bold
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp
                     )
                 }
             }
@@ -317,35 +374,38 @@ private fun TermGrid(onTermClick: (Int) -> Unit) {
 
 @Composable
 private fun SubjectGradeCard(grade: Grade, onOpen: () -> Unit) {
-    AppCard {
+    GlassCard(
+        modifier = Modifier.clickable(onClick = onOpen)
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onOpen),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = grade.subjectName,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Navy,
-                    fontWeight = FontWeight.Bold
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = "${grade.unitsCount} وحدات دراسية",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
+                    color = TextSecondary.copy(alpha = 0.7f)
                 )
             }
             Card(
-                shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = NavyContainer)
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = GlowBlue.copy(alpha = 0.15f)
+                )
             ) {
                 Text(
                     text = formatScore(grade.score),
                     style = MaterialTheme.typography.titleMedium,
-                    color = OnNavyContainer,
+                    color = GlowBlue,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
@@ -367,8 +427,9 @@ private fun GradeDetailSheet(grade: Grade) {
         Text(
             text = grade.subjectName,
             style = MaterialTheme.typography.headlineSmall,
-            color = Navy,
-            fontWeight = FontWeight.Bold
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 22.sp
         )
         Spacer(Modifier.height(4.dp))
         Text(
@@ -382,15 +443,13 @@ private fun GradeDetailSheet(grade: Grade) {
             DetailTile(
                 label = "الدرجة الحالية",
                 value = formatScore(grade.score),
-                container = NavyContainer,
-                valueColor = OnNavyContainer,
+                glowColor = GlowBlue,
                 modifier = Modifier.weight(1f)
             )
             DetailTile(
                 label = "عدد الوحدات",
                 value = "${grade.unitsCount}",
-                container = NavyContainer,
-                valueColor = OnNavyContainer,
+                glowColor = GlowPurple,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -398,15 +457,14 @@ private fun GradeDetailSheet(grade: Grade) {
         DetailTile(
             label = "الدرجة النهائية (الدرجة × الوحدات)",
             value = formatWeighted(weighted),
-            container = PresentGreen.copy(alpha = 0.12f),
-            valueColor = PresentGreen,
+            glowColor = GlowGreen,
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(Modifier.height(16.dp))
         Text(
             text = "يتم حساب الدرجة النهائية تلقائياً بضرب درجة المادة في عدد وحداتها الدراسية.",
             style = MaterialTheme.typography.bodySmall,
-            color = TextSecondary
+            color = TextSecondary.copy(alpha = 0.7f)
         )
     }
 }
@@ -415,19 +473,23 @@ private fun GradeDetailSheet(grade: Grade) {
 private fun DetailTile(
     label: String,
     value: String,
-    container: Color,
-    valueColor: Color,
+    glowColor: Color,
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = container)
+        modifier = modifier.shadow(
+            elevation = 8.dp,
+            shape = RoundedCornerShape(16.dp),
+            ambientColor = glowColor.copy(alpha = 0.3f),
+            spotColor = glowColor.copy(alpha = 0.5f)
+        ),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = glowColor.copy(alpha = 0.1f))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(label, style = MaterialTheme.typography.bodySmall, color = TextSecondary)
             Spacer(Modifier.height(6.dp))
-            Text(value, style = MaterialTheme.typography.headlineSmall, color = valueColor, fontWeight = FontWeight.Bold)
+            Text(value, style = MaterialTheme.typography.headlineSmall, color = glowColor, fontWeight = FontWeight.Bold)
         }
     }
 }

@@ -74,10 +74,9 @@ import com.university.app.ui.components.TERM_LABELS
 import com.university.app.ui.components.levelNumber
 import com.university.app.ui.components.termNumber
 import com.university.app.ui.theme.AbsentRed
-import com.university.app.ui.theme.Background
-import com.university.app.ui.theme.Navy
+import com.university.app.ui.theme.GlowBlue
 import com.university.app.ui.theme.PresentGreen
-import com.university.app.ui.theme.SurfaceWhite
+import com.university.app.ui.theme.SurfaceGlassLight
 import com.university.app.ui.theme.TextSecondary
 import com.university.app.util.ExcelReader
 import java.text.SimpleDateFormat
@@ -207,7 +206,7 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
         Scaffold(
             topBar = { AppTopBar(title = "نظام الحضور التفاعلي", onBack = onBack) },
             snackbarHost = { SnackbarHost(snackbarHostState) },
-            containerColor = Background
+            containerColor = Color.Transparent
         ) { padding ->
             LazyColumn(
                 modifier = Modifier.fillMaxSize().padding(padding),
@@ -220,7 +219,7 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                             Text(
                                 "إعدادات المحاضرة",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Navy,
+                                color = GlowBlue,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(16.dp))
@@ -246,7 +245,7 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                                     onClick = { subjectMenuOpen = true },
                                     modifier = Modifier.fillMaxWidth().height(56.dp),
                                     shape = MaterialTheme.shapes.medium,
-                                    colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = Navy)
+                                    colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = GlowBlue)
                                 ) {
                                     Text(
                                         if (subject.isBlank()) "اختر المادة..." else subject,
@@ -290,7 +289,7 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                                 },
                                 modifier = Modifier.fillMaxWidth().height(50.dp),
                                 shape = MaterialTheme.shapes.medium,
-                                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = Navy)
+                                colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(contentColor = GlowBlue)
                             ) {
                                 Icon(Icons.Filled.UploadFile, contentDescription = null)
                                 Spacer(Modifier.size(6.dp))
@@ -306,7 +305,7 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                             Text(
                                 "المحاضرة رقم $lecture",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Navy,
+                                color = GlowBlue,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(16.dp))
@@ -324,7 +323,7 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
         }
     } else {
         Scaffold(
-            containerColor = Background,
+            containerColor = Color.Transparent,
             snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { padding ->
             Column(
@@ -341,17 +340,17 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                     Text(
                         "الطالب ${index + 1} من ${students.size}",
                         style = MaterialTheme.typography.titleMedium,
-                        color = Navy,
+                        color = GlowBlue,
                         fontWeight = FontWeight.Bold
                     )
                     Card(
                         shape = MaterialTheme.shapes.medium,
-                        colors = CardDefaults.cardColors(containerColor = SurfaceWhite)
+                        colors = CardDefaults.cardColors(containerColor = SurfaceGlassLight)
                     ) {
                         Text(
                             subject,
                             style = MaterialTheme.typography.labelMedium,
-                            color = Navy,
+                            color = GlowBlue,
                             modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                         )
                     }
@@ -362,7 +361,7 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                 Card(
                     modifier = Modifier.fillMaxWidth().weight(1f),
                     shape = MaterialTheme.shapes.extraLarge,
-                    colors = CardDefaults.cardColors(containerColor = SurfaceWhite),
+                    colors = CardDefaults.cardColors(containerColor = SurfaceGlassLight),
                     elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
                 ) {
                     Column(
@@ -379,13 +378,13 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                         Box(
                             modifier = Modifier
                                 .size(96.dp)
-                                .background(Navy.copy(alpha = 0.08f), CircleShape),
+                                .background(GlowBlue.copy(alpha = 0.08f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
                                 text = students.getOrNull(index)?.name?.ifEmpty { "؟" }?.take(1) ?: "؟",
                                 style = MaterialTheme.typography.headlineMedium,
-                                color = Navy,
+                                color = GlowBlue,
                                 fontWeight = FontWeight.Bold
                             )
                         }
@@ -400,7 +399,7 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                             Text(
                                 text = students.getOrNull(currentIndex)?.name ?: "",
                                 style = MaterialTheme.typography.displaySmall,
-                                color = Navy,
+                                color = GlowBlue,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center
                             )
@@ -511,11 +510,11 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                         stage = 0
                     }
                 ) {
-                    Text("رجوع للإعدادات", color = Navy, fontWeight = FontWeight.SemiBold)
+                    Text("رجوع للإعدادات", color = GlowBlue, fontWeight = FontWeight.SemiBold)
                 }
             },
             shape = MaterialTheme.shapes.large,
-            containerColor = SurfaceWhite
+            containerColor = SurfaceGlassLight
         )
     }
 
@@ -564,14 +563,14 @@ fun LiveAttendanceScreen(onBack: () -> Unit) {
                         }
                     }
                 ) {
-                    Text("استيراد", color = Navy, fontWeight = FontWeight.SemiBold)
+                    Text("استيراد", color = GlowBlue, fontWeight = FontWeight.SemiBold)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { importPreview = null }) { Text("إلغاء", color = TextSecondary) }
             },
             shape = MaterialTheme.shapes.large,
-            containerColor = SurfaceWhite
+            containerColor = SurfaceGlassLight
         )
     }
 }
